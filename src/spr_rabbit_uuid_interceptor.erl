@@ -14,23 +14,24 @@
 %% Copyright (c) 2007-2016 Pivotal Software, Inc.  All rights reserved.
 %%
 
--module(rabbit_timestamp_interceptor).
+-module(spr_rabbit_uuid_interceptor).
 
 -include_lib("rabbit_common/include/rabbit.hrl").
 -include_lib("rabbit_common/include/rabbit_framing.hrl").
+-include_lib("uuid/include/uuid.hrl").
 
 -behaviour(rabbit_channel_interceptor).
 
 -export([description/0, intercept/3, applies_to/0, init/1]).
 
 -rabbit_boot_step({?MODULE,
-                   [{description, "timestamp interceptor"},
+                   [{description, "uuid interceptor"},
                     {mfa, {rabbit_registry, register,
                            [channel_interceptor,
-                            <<"timestamp interceptor">>, ?MODULE]}},
+                            <<"uuid interceptor">>, ?MODULE]}},
                     {cleanup, {rabbit_registry, unregister,
                                [channel_interceptor,
-                                <<"timestamp interceptor">>]}},
+                                <<"uuid interceptor">>]}},
                     {requires, rabbit_registry},
                     {enables, recovery}]}).
 
@@ -43,8 +44,9 @@ description() ->
 
 intercept(#'basic.publish'{} = Method, Content, _IState) ->
     DecodedContent = rabbit_binary_parser:ensure_content_decoded(Content),
-    Timestamp = time_compat:os_system_time(seconds),
-    Content2 = set_content_timestamp(DecodedContent, Timestamp),
+    V4 = uuid:get_v4(),
+    Uuid = list_to_binary(uuid:uuid_to_string(V4)),
+    Content2 = set_content_uuid(DecodedContent, Uuid),
     {Method, Content2};
 
 intercept(Method, Content, _VHost) ->
@@ -56,13 +58,14 @@ applies_to() ->
 %%----------------------------------------------------------------------------
 
                                                 % Do not overwrite an existing timestamp
-set_content_timestamp(#content{properties = Props} = Content, _)
-  when is_integer(Props#'P_basic'.timestamp) ->
+set_content_uuid(#content{properties = Props} = Content, _)
+  when is_list(Props#'P_basic'.message_id) ->
     Content;
 
-set_content_timestamp(#content{properties = Props} = Content, Timestamp)
-  when Props#'P_basic'.timestamp == undefined ->
+set_content_uuid(#content{properties = Props} = Content, Uuid)
+  when Props#'P_basic'.message_id == undefined ->
     %% we need to reset properties_bin = none so the new properties
     %% get serialized when deliverying the message.
-    Content#content{properties = Props#'P_basic'{timestamp = Timestamp},
+    Content#content{properties = Props#'P_basic'{message_id = Uuid},
                     properties_bin = none}.
+

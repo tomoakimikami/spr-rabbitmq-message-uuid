@@ -1,7 +1,7 @@
-# RabbitMQ Message Timestamp Plugin #
+# RabbitMQ Message UUID Plugin #
 
-This plugin fills the `timestamp` property of a message as it enters
-RabbitMQ with the current (server node) timestamp value.
+This plugin fills the `uuid` property of a message as it enters
+RabbitMQ with the current (server node) UUID value.
 
 ## Supported RabbitMQ Versions ##
 
@@ -12,7 +12,7 @@ This plugin targets RabbitMQ 3.6.0 and later versions.
 Clone the repo and then build it with `make`:
 
 ```
-cd rabbitmq-message-timestamp
+cd spr-rabbitmq-message-uuid
 make
 # [snip]
 make dist
@@ -22,14 +22,14 @@ ls plugins/*
 
 Build artefacts then can be found under the `plugins` directory.
 
-Finally copy `plugins/rabbitmq_message_timestamp.ez` to the `$RABBITMQ_HOME/plugins` folder.
+Finally copy `plugins/spr_rabbitmq_message_uuid.ez` to the `$RABBITMQ_HOME/plugins` folder.
 
 ## Usage ##
 
 Just enable the plugin with the following command:
 
 ```bash
-rabbitmq-plugins enable rabbitmq_message_timestamp
+rabbitmq-plugins enable spr_rabbitmq_message_uuid
 ```
 
 The plugin will then hook into the `basic.publish` process in order to
@@ -42,7 +42,7 @@ throughput reduction when using this plugin, since it has to modify
 every message that crosses RabbitMQ.
 
 If there's enough demand, we could add in the future a way for only
-time-stamping messages that crosses certain exchanges, say by applying
+uuid-appended messages that crosses certain exchanges, say by applying
 policies.
 
 ## LICENSE ##

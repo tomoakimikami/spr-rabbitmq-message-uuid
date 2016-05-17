@@ -1,0 +1,7 @@
+{application, spr_rabbitmq_message_uuid,
+ [{description, "SPR RabbitMQ Message UUID"},
+  {vsn, ""},
+  {modules, []},
+  {registered, []},
+  {broker_version_requirements, ["3.6.0", "3.7.0"]},
+  {applications, [kernel, stdlib, rabbit, quickrand, uuid]}]}.

@@ -96,7 +96,7 @@ existing_uuid_test() ->
 get_payload(#amqp_msg{payload = P}) ->
   binary_to_term(P).
 
-get_uuid(#amqp_msg{props = #'P_basic'{uuid = T}}) ->
+get_uuid(#amqp_msg{props = #'P_basic'{message_id = T}}) ->
     T.
 
 setup_fabric(Chan, ExDeclare, QueueDeclare) ->
@@ -187,7 +187,7 @@ make_msg(V) ->
 
 make_uuided_msg(V,T) ->
     #amqp_msg{
-      props = #'P_basic'{uuid = T},
+      props = #'P_basic'{message_id = T},
       payload = term_to_binary(V)
     }.
 
