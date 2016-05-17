@@ -8,6 +8,7 @@ ebin
 rel/example_project
 .concrete/DEV_MODE
 .rebar
+.idea
 plugins
 .erlang.mk
 spr_rabbitmq_message_uuid.d
